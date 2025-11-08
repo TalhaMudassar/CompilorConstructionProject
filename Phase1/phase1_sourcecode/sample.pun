@@ -1,0 +1,47 @@
+class TestAll :::
+
+// --- Variable Declarations ---
+nava count <- 0~>
+nava pi <- 3.14~>
+nava power <- 2.5e3~>
+nava name <- "Lexical Analyzer Demo"~>
+char symbol <- 'Z'~>
+nava active <- nahiTa~>
+
+// --- Function Definition ---
+kaam showResult(nava a<> nava b) :::
+    nava sum <- a <+> b~>
+    fher (sum +> 15) :::
+        likh("Sum vadda hai!")~>
+        rok~>
+    :::;
+    morjaa sum~>
+:::;
+
+// --- Loop Example ---
+chakkar (nava i <- 0<> i <+ 3<> i ++>) :::
+    count <- count <+ i~>
+    fher (count <+ 10) :::
+        likh("Count chhota hai")~>
+    nahiTa :::
+        likh("Count vadda hai")~>
+    :::;
+    jaari~>
+:::;
+
+// --- Switch-like Example ---
+dekh (count) :::
+    halat 0: likh("Zero")~>
+    halat 3: likh("Tee")~>
+    halat 6: likh("Chhe")~>
+    nahiTa :::
+        likh("Kujh hor")~>
+    :::;
+mukao~>
+
+// --- Deliberate Errors ---
+nava badString <- "Unclosed string literal
+@wrongID <- 5~>
+
+
+:::;
