@@ -1,0 +1,8 @@
+
+GitHub Repository URL:
+https://github.com/TalhaMudassar/CompilorConstructionProject
+--------------------------------------------------------------------------------------------------
+
+
+Direct Video Link (Managed by Git LFS):
+https://github.com/TalhaMudassar/CompilorConstructionProject/raw/main/Phase1/demo_video_phase_01.mp4
