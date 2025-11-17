@@ -1,47 +1,29 @@
-class TestAll :::
-
-// --- Variable Declarations ---
-nava count <- 0~>
-nava pi <- 3.14~>
-nava power <- 2.5e3~>
-nava name <- "Lexical Analyzer Demo"~>
-char symbol <- 'Z'~>
-nava active <- nahiTa~>
-
-// --- Function Definition ---
-kaam showResult(nava a<> nava b) :::
-    nava sum <- a <+> b~>
-    fher (sum +> 15) :::
-        likh("Sum vadda hai!")~>
-        rok~>
-    :::;
-    morjaa sum~>
+kaam add(x, y)
+:::
+    int c = 9 ; 
+    mukao x + y~>
 :::;
 
-// --- Loop Example ---
-chakkar (nava i <- 0<> i <+ 3<> i ++>) :::
-    count <- count <+ i~>
-    fher (count <+ 10) :::
-        likh("Count chhota hai")~>
+
+
+kaam main()
+:::
+  
+    num1 <- 8~>
+    num2 <- 7~>
+
+
+    result <- add(num1<> num2)~>
+
+    
+    fher (result > 10) :::
+        likh("Result is greater than 10")~>
     nahiTa :::
-        likh("Count vadda hai")~>
+        likh("Result is 10 or less")~>
     :::;
-    jaari~>
-:::;
 
-// --- Switch-like Example ---
-dekh (count) :::
-    halat 0: likh("Zero")~>
-    halat 3: likh("Tee")~>
-    halat 6: likh("Chhe")~>
-    nahiTa :::
-        likh("Kujh hor")~>
-    :::;
-mukao~>
-
-// --- Deliberate Errors ---
-nava badString <- "Unclosed string literal
-@wrongID <- 5~>
-
+        // --- error ---
+    badString <- "Unclosed string literal has been fixed.
+    @wrongID <- 5~>
 
 :::;

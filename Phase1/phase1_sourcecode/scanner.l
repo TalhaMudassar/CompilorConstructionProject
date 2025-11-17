@@ -4,19 +4,47 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
+FILE *tokFile;
+FILE *errFile;
+
+int total_tokens = 0;
+int count_identifier = 0;
+int count_integer = 0;
+int count_float = 0;
+int count_exponent = 0;
+int count_string = 0;
+int count_char = 0;
+int count_keyword = 0;
+int count_operator = 0;
+int count_punct = 0;
+int count_error = 0;
 
 void print_token(const char *type) {
-    printf("Line %d: %s -> %s\n", yylineno, type, yytext);
+    fprintf(tokFile, "Line %d: %-16s -> %s\n", yylineno, type, yytext);
+    total_tokens++;
+
+    if (!strcmp(type,"IDENTIFIER")) count_identifier++;
+    else if (!strcmp(type,"NUMBER_INTEGER")) count_integer++;
+    else if (!strcmp(type,"NUMBER_FLOAT")) count_float++;
+    else if (!strcmp(type,"NUMBER_EXPONENT")) count_exponent++;
+    else if (!strcmp(type,"STRING_LITERAL")) count_string++;
+    else if (!strcmp(type,"CHAR_LITERAL")) count_char++;
+    else if (!strncmp(type,"KW_",3)) count_keyword++;
+    else if (!strncmp(type,"OP_",3)) count_operator++;
+    else if (!strncmp(type,"PUNC_",5)) count_punct++;
 }
 
 void report_error(const char *msg) {
-    fprintf(stderr, "Line %d: ERROR -> %s (%s)\n", yylineno, yytext, msg);
+    fprintf(errFile, "Line %d: ERROR -> %s : %s\n", yylineno, msg, yytext);
+    count_error++;
+    total_tokens++;
 }
 
 extern FILE *yyin;
 %}
 
-/* Regular definitions */
 DIGIT       [0-9]
 LETTER      [A-Za-z]
 ID_START    [A-Za-z_]
@@ -25,45 +53,45 @@ INT         {DIGIT}+
 FLOAT       {INT}"."{DIGIT}+
 EXPONENT    {INT}(\.{DIGIT}+)?[eE][+-]?{INT}
 
-/* Punjabi-style punctuations */
 PUNC_LBLOCK  ":::"
 PUNC_RBLOCK  ":::;"
 PUNC_END     "~>"
 PUNC_SEP     "<>"
 
-/* Punjabi-style operators */
+OP_ADDASSIGN "<+>"
 OP_EQUAL     "<->"
 OP_NOTEQ     "<!>"
-OP_ADDASSIGN "<+>"
+OP_INC       "++>"
 OP_GREATER   "+>"
 OP_LESS      "<+"
-OP_INC       "++>"
+OP_ASSIGN_PUNJ "<-"
 
-/* Standard operators */
-OP_ASSIGN    "="
-OP_PLUS      "+"
-OP_MINUS     "-"
-OP_MULT      "*"
-OP_DIV       "/"
-OP_MOD       "%"
-OP_AND       "&&"
-OP_OR        "||"
-OP_LT        "<"
-OP_GT        ">"
+OP_PLUS       "\+"
+OP_MINUS      "-"
+OP_MULT       "\*"
+OP_DIV        "/"
+OP_MOD        "%"
+OP_AND        "&&"
+OP_OR         "\|\|"
+OP_LT         "<"
+OP_GT         ">"
+OP_EQ_C       "=="
+OP_NEQ_C      "!="
+OP_INC_C      "\+\+"
+OP_ADDASSIGN_C "\+="
 
 %%
 
+[ \t\r]+      { }
+\n            { }
 
-[ \t\r]+      { /* skip */ }
-\n            { /* yylineno auto-increments */ }
+"//".*        { }
 
+"/*"([^*]|\*+[^*/])*\*+\/ {
+    char *p; for (p=yytext;*p;p++) if (*p=='\n') yylineno++;
+}
 
-"//".*        { /* skip single-line comment */ }
-"/*"([^*]|\*+[^*/])*\*+\/ { 
-                char *p; 
-                for (p=yytext; *p; ++p) if (*p=='\n') yylineno++;
-              }
-
+"/*"([^*]|\*+[^*/])*$ { report_error("Unterminated block comment"); }
 
 "fher"       { print_token("KW_fher"); }
 "nahiTa"     { print_token("KW_nahiTa"); }
@@ -81,67 +109,104 @@ OP_GT        ">"
 "halat"      { print_token("KW_halat"); }
 "mukao"      { print_token("KW_mukao"); }
 
+"if"        { report_error("Use 'fher'"); }
+"else"      { report_error("Use 'nahiTa'"); }
+"while"     { report_error("Use 'jadTak'"); }
+"for"       { report_error("Use 'kaam'"); }
+"do"        { report_error("Use 'chakkar'"); }
+"break"     { report_error("Use 'rok'"); }
+"continue"  { report_error("Use 'jaari'"); }
+"new"       { report_error("Use 'nava'"); }
+"switch"    { report_error("Use 'dekh'"); }
+"case"      { report_error("Use 'halat'"); }
+"default"   { report_error("Use 'mukao'"); }
+"return"    { report_error("Use 'morjaa'"); }
+"cin"       { report_error("Use 'likh'"); }
+"cout"      { report_error("Use 'dass'"); }
 
-\"([^\\\n\"]|\\.)*\"   { print_token("STRING_LITERAL"); }
-\'([^\\\n\']|\\.)\'    { print_token("CHAR_LITERAL"); }
-\"([^\\\n\"]|\\.)*     { report_error("unterminated string"); }
-\'([^\\\n\']|\\.)*     { report_error("unterminated character"); }
+{OP_ADDASSIGN}  { print_token("OP_AddAssign"); }
+{OP_EQUAL}      { print_token("OP_Equal"); }
+{OP_NOTEQ}      { print_token("OP_Not_Equal"); }
+{OP_INC}        { print_token("OP_Increment"); }
+{OP_GREATER}    { print_token("OP_Greater"); }
+{OP_LESS}       { print_token("OP_Less"); }
 
 
-{OP_ADDASSIGN}  { print_token("OP_ADDASSIGN"); }
-{OP_EQUAL}      { print_token("OP_EQUAL"); }
-{OP_NOTEQ}      { print_token("OP_NOTEQ"); }
-{OP_INC}        { print_token("OP_INC"); }
-{OP_GREATER}    { print_token("OP_GREATER"); }
-{OP_LESS}       { print_token("OP_LESS"); }
-{OP_AND}        { print_token("OP_AND"); }
-{OP_OR}         { print_token("OP_OR"); }
-{OP_ASSIGN}     { print_token("OP_ASSIGN"); }
+{OP_EQ_C}       { report_error("Use '<->'"); }
+{OP_NEQ_C}      { report_error("Use '<!>'"); }
+{OP_INC_C}      { report_error("Use '++>'"); }
+
+
 {OP_PLUS}       { print_token("OP_PLUS"); }
 {OP_MINUS}      { print_token("OP_MINUS"); }
 {OP_MULT}       { print_token("OP_MULT"); }
 {OP_DIV}        { print_token("OP_DIV"); }
 {OP_MOD}        { print_token("OP_MOD"); }
-{OP_LT}         { print_token("OP_LT"); }
-{OP_GT}         { print_token("OP_GT"); }
+{OP_AND}        { print_token("OP_AND"); }
+{OP_OR}         { print_token("OP_OR"); }
+"<"             { print_token("OP_LT"); }
+">"             { print_token("OP_GT"); }
 
-
-{PUNC_RBLOCK}   { print_token("PUNC_RBLOCK"); }
 {PUNC_LBLOCK}   { print_token("PUNC_LBLOCK"); }
+{PUNC_RBLOCK}   { print_token("PUNC_RBLOCK"); }
 {PUNC_END}      { print_token("PUNC_END"); }
 {PUNC_SEP}      { print_token("PUNC_SEP"); }
 
+"{"             { report_error("Use ':::'"); }
+"}"             { report_error("Use ':::;'"); }
+";"             { report_error("Use '~>'"); }
 
 "("             { print_token("LPAREN"); }
 ")"             { print_token("RPAREN"); }
-"."             { print_token("DOT"); }
-":"             { print_token("COLON"); }
-";"             { print_token("SEMICOLON"); }
 ","             { print_token("COMMA"); }
+":"             { report_error("Not allowed ':'"); }
+"."             { print_token("DOT"); }
 
+\"([^\\\n\"]|\\.)*\"  { print_token("STRING_LITERAL"); }
+\'([^\\\n\']|\\.)\'   { print_token("CHAR_LITERAL"); }
+
+\"([^\\\n\"]|\\.)*    { report_error("Unterminated string"); }
+\'([^\\\n\']|\\.)*    { report_error("Unterminated char"); }
 
 {EXPONENT}      { print_token("NUMBER_EXPONENT"); }
 {FLOAT}         { print_token("NUMBER_FLOAT"); }
 {INT}           { print_token("NUMBER_INTEGER"); }
 
+{ID_START}{ID_CONT}* { print_token("IDENTIFIER"); }
 
-{ID_START}{ID_CONT}*  { print_token("IDENTIFIER"); }
+[@#\$][A-Za-z0-9_]* { report_error("Invalid identifier"); }
 
-
-
-[@#\$][A-Za-z0-9_]*   { report_error("invalid identifier"); }
-
-
-.                     { report_error("invalid token"); }
+. { report_error("Invalid token"); }
 
 %%
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
+    tokFile = fopen("tokens.txt","w");
+    errFile = fopen("errors.log","w");
+
     if (argc > 1) {
-        FILE *f = fopen(argv[1], "r");
-        if (!f) { fprintf(stderr, "ERROR: Could not open %s\n", argv[1]); return 1; }
+        FILE *f = fopen(argv[1],"r");
+        if (!f) return 1;
         yyin = f;
     }
+
     yylex();
+
+    fprintf(tokFile,"\n========= SUMMARY =========\n");
+    fprintf(tokFile,"Total tokens: %d\n", total_tokens);
+    fprintf(tokFile,"Identifiers: %d\n", count_identifier);
+    fprintf(tokFile,"Integers: %d\n", count_integer);
+    fprintf(tokFile,"Floats: %d\n", count_float);
+    fprintf(tokFile,"Exponents: %d\n", count_exponent);
+    fprintf(tokFile,"Strings: %d\n", count_string);
+    fprintf(tokFile,"Chars: %d\n", count_char);
+    fprintf(tokFile,"Keywords: %d\n", count_keyword);
+    fprintf(tokFile,"Operators: %d\n", count_operator);
+    fprintf(tokFile,"Punctuation: %d\n", count_punct);
+    fprintf(tokFile,"Errors: %d\n", count_error);
+
+    fclose(tokFile);
+    fclose(errFile);
     return 0;
 }

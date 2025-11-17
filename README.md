@@ -61,7 +61,7 @@ gcc lex.yy.c -o scanner
 Run the scanner with a test file:
 
 
-./scanner < sample.pun
+./scanner sample.pun >tokens.txt 2>errors.log
 Check generated files:
 
 tokens.txt → List of tokens generated
@@ -84,10 +84,3 @@ GitHub: https://github.com/TalhaMudassar
 License
 This project is for academic purposes. Modify and use according to your university guidelines.
 
-
-
----
-
-I can also make a **shorter, GitHub-ready version with badges and cleaner formatting** for a more professional look if you want.  
-
-Do you want me to do that?

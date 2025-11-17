@@ -1,3 +1,4 @@
-Line 43: ERROR -> "Unclosed string literal
- (unterminated string)
-Line 44: ERROR -> @wrongID (invalid identifier)
+Line 3: ERROR -> Invalid token : =
+Line 3: ERROR -> Use '~>' : ;
+Line 26: ERROR -> Unterminated string : "Unclosed string literal has been fixed.
+Line 27: ERROR -> Invalid identifier : @wrongID
