@@ -1,93 +1,148 @@
-# Compilor Construction Project
+# PUNJ++ Compiler – Phase 1
 
-This repository contains the **Compiler Construction Project** completed as part of the academic coursework. The project includes source code, documentation, and demonstration files for **Phase 1** of the project.
+## Overview
+
+**PUNJ++ (Punjabi Programming Language Plus Plus)** is a high-level programming language designed to make programming intuitive for Punjabi speakers by replacing traditional English syntax with Roman Punjabi expressions.  
+
+Phase 1 of this compiler project focuses on the **lexical analysis** of PUNJ++ programs. The **scanner (`scanner.l`)** tokenizes source code, identifies valid identifiers, numbers, keywords, operators, punctuations, and reports lexical errors.
 
 ---
 
-## Project Structure
+## Features
 
+- Recognizes **Punjabi-inspired keywords** such as `fher`, `nahiTa`, `jadTak`, `likh`, `dass`, `morjaa`.
+- Detects valid **identifiers, numbers, strings, and characters**.
+- Supports standard **operators** (`<+>`, `<->`, `<!>`, `++>`) and **punctuations** (`:::`, `:::;`, `~>`, `<>`).
+- Case-sensitive, similar to C++.
+- Generates **tokens.txt** with all recognized tokens.
+- Generates **errors.log** for invalid tokens or lexical errors.
+
+---
+
+## Repository Structure
+
+```
 CompilorConstructionProject/
 ├── Phase1/
-│ ├── Compiler_Construction_project_phase_01.pdf # Project report
-│ ├── demo_video_phase_01.mp4 # Demo video
-│ └── phase1_sourcecode/
-│ ├── scanner
-│ ├── scanner.l
-│ ├── lex.yy.c
-│ ├── tokens.txt
-│ ├── sample.pun
-│ ├── errors.log
-│ └── .vscode/ # VS Code config files
+│   ├── Compiler_Construction_project_phase_01.pdf   # Phase 1 project report
+│   ├── demo_video_phase_01.mp4                      # Demo video
+│   └── phase1_sourcecode/
+│       ├── scanner                                 # Executable scanner
+│       ├── scanner.l                               # Lexical analyzer (Flex source)
+│       ├── lex.yy.c                                # Generated lexer source
+│       ├── tokens.txt                               # Output tokens
+│       ├── sample.pun                               # Sample PUNJ++ program
+│       ├── errors.log                               # Lexical errors
+│       └── .vscode/                                # VS Code config files
 └── README.md
-
-
-
-## Description
-
-This project demonstrates the implementation of a **compiler front-end**, including lexical analysis, token generation, and error handling.  
-
-- **Lexical Analyzer**: Implemented using `.l` files and generated `.c` files.
-- **Source Code Samples**: `.pun` files for testing.
-- **Output Files**: `tokens.txt` and `errors.log`.
-- **Documentation**: PDF report describing project design and implementation.
-- **Demo Video**: Demonstrates project execution and workflow.
+```
 
 ---
 
-## Requirements
+## Installation and Compilation
 
-- GCC / C Compiler
-- Flex / Lex
-- VS Code (optional, for editing and running code)
-- Git LFS (for large video files)
+Ensure you have **Flex** and **GCC** installed.
+
+### Step 1: Generate the lexer
+
+```bash
+flex scanner.l
+```
+
+This generates:
+
+- `lex.yy.c` → Lexer source file
+
+---
+
+### Step 2: Compile the scanner
+
+```bash
+gcc lex.yy.c -o scanner
+```
+
+This produces the executable `scanner`.
 
 ---
 
 ## Usage
 
-1. Clone the repository:
+### Run the scanner on a PUNJ++ source file:
 
+```bash
+./scanner sample.pun
+```
 
-git clone https://github.com/TalhaMudassar/CompilorConstructionProject.git
-Navigate to the Phase 1 source code:
+This will generate:
 
-
-cd CompilorConstructionProject/Phase1/phase1_sourcecode
-Compile the lexical analyzer:
-
-
-flex scanner.l
-gcc lex.yy.c -o scanner
-Run the scanner with a test file:
-
-
-./scanner < sample.pun
-Check generated files:
-
-tokens.txt → List of tokens generated
-
-errors.log → Compilation or lexical errors
-
-Notes
-Large files like demo_video_phase_01.mp4 are managed using Git LFS.
-
-Ensure Git LFS is installed before cloning or pulling large media files:
-
-
-git lfs install
-git lfs pull
-Author
-Talha Mudassar
-
-GitHub: https://github.com/TalhaMudassar
-
-License
-This project is for academic purposes. Modify and use according to your university guidelines.
-
-
+- `tokens.txt` → Contains all recognized tokens from the input file.
+- `errors.log` → Contains any lexical errors detected in the input file.
 
 ---
 
-I can also make a **shorter, GitHub-ready version with badges and cleaner formatting** for a more professional look if you want.  
+## Example
 
-Do you want me to do that?
+### Sample Input (`sample.pun`)
+
+```
+int x ~>
+x <+> 10 ~>
+fher (x <-> 10) :::
+dass << x ~>
+:::
+```
+
+### Output in `tokens.txt`
+
+```
+KEYWORD int
+IDENTIFIER x
+PUNCTUATION ~>
+IDENTIFIER x
+OPERATOR <+>
+NUMBER 10
+PUNCTUATION ~>
+KEYWORD fher
+PUNCTUATION (
+IDENTIFIER x
+OPERATOR <->
+NUMBER 10
+PUNCTUATION )
+PUNCTUATION :::
+KEYWORD dass
+OPERATOR <<
+IDENTIFIER x
+PUNCTUATION ~>
+PUNCTUATION :::;
+```
+
+### Output in `errors.log`
+
+```
+# Empty if no lexical errors, or contains invalid tokens like:
+@invalidToken
+# or
+#123abc
+```
+
+---
+
+## Notes
+
+- The **scanner** (`scanner.l`) uses regular expressions to recognize valid tokens and identify invalid ones.
+- Keywords, operators, identifiers, and punctuations are all **Roman Punjabi-inspired** for ease of understanding.
+- `tokens.txt` and `errors.log` allow easy verification of lexical correctness before moving to syntax parsing in Phase 2.
+
+---
+
+## Authors
+
+**Talha Mudassar** – L1F22BSCS0379  
+
+Phase 1 – Compiler Construction Project  
+
+---
+
+## License
+
+This project is for **educational purposes** and can be freely used or modified for learning lexical analysis in compiler construction.
